@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'TaskModel.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -12,14 +14,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: Colors.blue,
           centerTitle: true,
           title: const Text(
-            "TO DO LIST UI",
+            "TODO with Provider",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Colors.white70,
+              color: Colors.white,
             ),
           ),
         ),
@@ -38,43 +40,72 @@ class BuildUI extends StatefulWidget {
 
 class _BuildUIState extends State<BuildUI> {
 
-  final List<String> tasks = ["Clean House", "Buy Groceries", "Make Dinner", "Wash Clothes"];
+  final TextEditingController _taskController = TextEditingController();
+  final List<Task> _taskList = [];
 
-  List<bool> isDone = List.generate(4, (index) => false);
+  void _addTask(String taskName) {
+    setState(() {
+      _taskList.add(Task(taskName: taskName));
+    });
+  }
 
+  void _toggleTaskStatus(int index) {
+    setState(() {
+      _taskList[index].isDone = !(_taskList[index].isDone ?? false);
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
-          children: List.generate(tasks.length, (index) {
-            return Column(
-              children: [
-                Card(
-                  color: Colors.black12,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 15,right: 10,left: 10,bottom: 5),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  labelText: "Task Name",
+                ),
+                controller: _taskController,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: (){
+                if(_taskController.text.isNotEmpty){
+                  _addTask(_taskController.text);
+                  _taskController.clear();
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Colors.lightBlue),
+              ),
+              child: const Text("Submit",style: TextStyle(color: Colors.white),),
+            ),
+
+            Divider(color: Colors.white12,height: 5,),
+
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: _taskList.length,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context,index){
+                final task = _taskList[index];
+                return Card(
                   child: ListTile(
-                    onTap: () {
-                      setState(() {
-                        isDone[index] = !isDone[index];
-                      });
-                    },
-                    trailing: Icon(
-                      isDone[index] ? Icons.cancel : Icons.check,
-                      color: isDone[index] ? Colors.red : Colors.green,
-                    ),
-                    title: Text(
-                      tasks[index],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    title: Text(task.taskName ?? "No Name"),
+                    trailing: Checkbox(
+                      value: task.isDone ?? false,
+                      onChanged: (value){
+                        _toggleTaskStatus(index);
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 5),
-              ],
-            );
-          }),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
