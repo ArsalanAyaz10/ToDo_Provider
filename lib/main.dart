@@ -17,38 +17,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TaskProvider>(
-      builder: (context, value, child) {
-        return MaterialApp(
-          home: Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-              },
-              mouseCursor: WidgetStateMouseCursor.clickable,
-              splashColor: Colors.lightBlue,
-              elevation: 2,
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            ),
-            appBar: AppBar(
-              backgroundColor: Colors.blue,
-              centerTitle: true,
-              elevation: 2,
-              title: const Text(
-                "To Do with Provider",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.white,
+    return MaterialApp(
+      home: Consumer<TaskProvider>(
+        builder: (context, value, child) {
+          return Scaffold(
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  print("FloatingActionButton pressed");
+                  await _showMyDialog(context);
+                },
+                mouseCursor: WidgetStateMouseCursor.clickable,
+                splashColor: Colors.lightBlue,
+                elevation: 2,
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add),
+              ),
+              appBar: AppBar(
+                backgroundColor: Colors.blue,
+                centerTitle: true,
+                elevation: 2,
+                title: const Text(
+                  "To Do with Provider",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            body: const BuildUI(),
-          ),
-        );
-      },
+              body: const BuildUI(),
+            );
+        },
+      ),
     );
+
   }
 }
 
@@ -60,8 +63,6 @@ class BuildUI extends StatefulWidget {
 }
 
 class _BuildUIState extends State<BuildUI> {
-  TextEditingController _titlecontroller = TextEditingController();
-  TextEditingController _desc_controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,58 +70,7 @@ class _BuildUIState extends State<BuildUI> {
           child: SafeArea(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: _titlecontroller,
-                    decoration: InputDecoration(
-                      labelText: "Task Title",
-                      prefixIcon: const Icon(Icons.event_note_outlined),
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 246, 246, 246),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter task title';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: _desc_controller,
-                    decoration: InputDecoration(
-                      labelText: "Task Description",
-                      prefixIcon: const Icon(Icons.event_note_outlined),
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 246, 246, 246),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter task Description';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                ElevatedButton(onPressed: () {
-                  if(_titlecontroller.text.isEmpty || _desc_controller.text.isEmpty){
-                    return;
-                  }
-                  context.read<TaskProvider>().addTask(_titlecontroller.text, _desc_controller.text);
-                  _titlecontroller.clear();
-                  _desc_controller.clear();
-                },
-                  child: Text("Add"),
-                ),
+
              Consumer<TaskProvider>(
         builder: (context, Task, child) {
           if(context.watch<TaskProvider>().tasks.isEmpty){
@@ -153,10 +103,89 @@ class _BuildUIState extends State<BuildUI> {
           );
         },
              ),
-              ],
+              ]
             ),
           ),
         );
   }
 }
 
+
+//task dialog box
+
+Future<void> _showMyDialog(BuildContext context) async {
+
+  TextEditingController _titlecontroller = TextEditingController();
+  TextEditingController _desc_controller = TextEditingController();
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog.adaptive(
+        title: const Text('Add Task'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _titlecontroller,
+                  decoration: InputDecoration(
+                    labelText: "Task Title",
+                    prefixIcon: const Icon(Icons.event_note_outlined),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 246, 246, 246),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter task title';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+               Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _desc_controller,
+                  decoration: InputDecoration(
+                    labelText: "Task Description",
+                    prefixIcon: const Icon(Icons.pending_actions),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 246, 246, 246),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter task Description';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(onPressed: () {
+            if(_titlecontroller.text.isEmpty || _desc_controller.text.isEmpty){
+              return;
+            }
+            context.read<TaskProvider>().addTask(_titlecontroller.text, _desc_controller.text);
+            _titlecontroller.clear();
+            _desc_controller.clear();
+            Navigator.of(context).pop();
+          },
+            child: Text("Add"),
+          ),
+        ],
+      );
+    },
+  );
+}
