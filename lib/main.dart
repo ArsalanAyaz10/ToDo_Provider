@@ -1,3 +1,4 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoui/taskCard.dart';
@@ -21,12 +22,14 @@ class MyApp extends StatelessWidget {
       home: Consumer<TaskProvider>(
         builder: (context, value, child) {
           return Scaffold(
+             floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
-                  print("FloatingActionButton pressed");
                   await _showMyDialog(context);
                 },
-                mouseCursor: WidgetStateMouseCursor.clickable,
+                shape: CircleBorder(),
+                focusElevation: 2,
                 splashColor: Colors.lightBlue,
                 elevation: 2,
                 backgroundColor: Colors.blueAccent,
