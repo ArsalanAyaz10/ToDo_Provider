@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../Model/TaskModel.dart';
 
-import 'TaskModel.dart';
 
 class taskCard extends StatefulWidget {
   final int index;
@@ -28,6 +28,7 @@ class _taskCardState extends State<taskCard> {
     behavior: HitTestBehavior.opaque,
     key: UniqueKey(),
     child: Card(
+      color: Color.fromRGBO(123, 152, 244, 1.0),
       shadowColor: Colors.black,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
@@ -36,8 +37,8 @@ class _taskCardState extends State<taskCard> {
         children: [
           ListTile(
             autofocus: true,
-            title: Text(widget.taskTitle),
-            subtitle: Text(widget.description),
+            title: Text(widget.taskTitle.toUpperCase(),style: TextStyle(color: Colors.white,fontSize: 16),),
+            subtitle: Text(widget.description,style: TextStyle(color: Colors.white,fontSize: 12,),),
             focusColor: Colors.white60,
             trailing: Checkbox(
         value: widget.isCompleted,

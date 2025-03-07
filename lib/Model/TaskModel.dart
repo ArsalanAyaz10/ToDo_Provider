@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class TaskModel {
   final int id;
@@ -6,7 +6,12 @@ class TaskModel {
   final String description;
   bool isCompleted;
 
-  TaskModel(this.id, {required this.title, required this.description, this.isCompleted = false});
+  TaskModel(
+    this.id, {
+    required this.title,
+    required this.description,
+    this.isCompleted = false,
+  });
 }
 
 class TaskProvider extends ChangeNotifier {
@@ -15,7 +20,14 @@ class TaskProvider extends ChangeNotifier {
   List<TaskModel> get tasks => _tasks;
 
   void addTask(String title, String description) {
-    _tasks.add(TaskModel(_tasks.length, title: title, description: description, isCompleted: false));
+    _tasks.add(
+      TaskModel(
+        _tasks.length,
+        title: title,
+        description: description,
+        isCompleted: false,
+      ),
+    );
     notifyListeners();
   }
 
