@@ -5,13 +5,15 @@ class TaskModel {
   final String title;
   final String description;
   bool isCompleted;
+  final DateTime dateTime;
 
   TaskModel(
-    this.id, {
-    required this.title,
-    required this.description,
-    this.isCompleted = false,
-  });
+      this.id, {
+        required this.title,
+        required this.description,
+        required this.dateTime,
+        this.isCompleted = false,
+      });
 }
 
 class TaskProvider extends ChangeNotifier {
@@ -19,12 +21,13 @@ class TaskProvider extends ChangeNotifier {
 
   List<TaskModel> get tasks => _tasks;
 
-  void addTask(String title, String description) {
+  void addTask(String title, String description, DateTime dateTime) {
     _tasks.add(
       TaskModel(
         _tasks.length,
         title: title,
         description: description,
+        dateTime: dateTime,
         isCompleted: false,
       ),
     );

@@ -183,6 +183,7 @@ class _BuildUIState extends State<BuildUI> {
                           .tasks[index];
                       return taskCard(
                         index: index,
+                        taskTime: task.dateTime.toString(),
                         taskTitle: task.title,
                         description: task.description,
                         isCompleted: task.isCompleted,
