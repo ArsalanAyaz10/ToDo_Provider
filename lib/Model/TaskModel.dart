@@ -16,5 +16,25 @@ class TaskModel {
     this.isCompleted = false,
   });
 
+    // Convert TaskModel to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'isCompleted': isCompleted,
+      'dateTime': dateTime.toIso8601String(),
+    };
+  }
 
+  // Convert JSON to TaskModel
+  factory TaskModel.fromJson(Map<String, dynamic> json) {
+    return TaskModel(
+      json['id'],
+      title: json['title'],
+      description: json['description'],
+      dateTime: DateTime.parse(json['dateTime']),
+      isCompleted: json['isCompleted'],
+    );
+  }
 }

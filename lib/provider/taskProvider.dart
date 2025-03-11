@@ -1,30 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:todoui/Model/TaskModel.dart';
 
-class TaskProvider extends ChangeNotifier implements TaskModel {
-  final List<TaskModel> _tasks = [];
+class TaskProvider extends ChangeNotifier {
+  List<TaskModel> _tasks = [];
 
   List<TaskModel> get tasks => _tasks;
 
-  @override
-  late bool isCompleted;
-
-  @override
-  // TODO: implement dateTime
-  DateTime get dateTime => throw UnimplementedError();
-
-  @override
-  // TODO: implement description
-  String get description => throw UnimplementedError();
-
-  @override
-  // TODO: implement id
-  int get id => throw UnimplementedError();
-
-  @override
-  // TODO: implement title
-  String get title => throw UnimplementedError();
+  TaskProvider() {
+    fetchData(); // Load saved tasks when the provider is created
+  }
 
   void addTask(String title, String description, DateTime dateTime) {
     _tasks.add(
@@ -36,12 +22,13 @@ class TaskProvider extends ChangeNotifier implements TaskModel {
         isCompleted: false,
       ),
     );
+    storeData(); // Save tasks to SharedPreferences
     notifyListeners();
-    storeData();
   }
 
   void removeTask(int id) {
     _tasks.removeWhere((task) => task.id == id);
+    storeData(); // Save updated list
     notifyListeners();
   }
 
@@ -49,32 +36,34 @@ class TaskProvider extends ChangeNotifier implements TaskModel {
     int index = _tasks.indexWhere((task) => task.id == id);
     if (index != -1) {
       _tasks[index].isCompleted = !_tasks[index].isCompleted;
+      storeData(); // Save updated task state
       notifyListeners();
     }
   }
 
+  // ✅ Store all tasks as JSON
   Future<void> storeData() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setInt('id', _tasks.length);
-    await pref.setString('title', title);
-    await pref.setString('description', description);
-    await pref.setString('dateTime', dateTime.toIso8601String());
-    await pref.setBool('isCompleted', isCompleted);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> taskList =
+        _tasks.map((task) => jsonEncode(task.toJson())).toList();
+    await prefs.setStringList('tasks', taskList);
   }
 
+  // ✅ Fetch tasks from SharedPreferences
   Future<void> fetchData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? username = prefs.getString('username');
-    int? userAge = prefs.getInt('user_age');
-    bool? isLoggedIn = prefs.getBool('is_logged_in');
+    List<String>? taskList = prefs.getStringList('tasks');
 
-    print('Username: $username');
-    print('Age: $userAge');
-    print('Logged in: $isLoggedIn');
+    if (taskList != null) {
+      _tasks = taskList.map((task) => TaskModel.fromJson(jsonDecode(task))).toList();
+      notifyListeners();
+    }
   }
 
   void clearData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    await prefs.clear();
+    _tasks.clear();
+    notifyListeners();
   }
 }
