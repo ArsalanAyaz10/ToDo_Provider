@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoui/Screens/HomeScreen.dart';
 import 'package:todoui/Screens/getStarted.dart';
+import 'package:todoui/provider/taskProvider.dart';
 import 'Model/TaskModel.dart';
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoui/provider/taskProvider.dart';
 import '../Model/TaskModel.dart';
 import '../Widgets/dialogBox.dart';
 import '../Widgets/taskCard.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer<TaskProvider>(
       builder: (context, value, child) {
         return Scaffold(
-          backgroundColor: Color.fromRGBO(52, 78, 163,1),
+          backgroundColor: Color.fromRGBO(52, 78, 163, 1),
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           floatingActionButton: FloatingActionButton(
@@ -39,18 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(Icons.search, color: Colors.white),
               const SizedBox(width: 30),
               Icon(Icons.notifications_none, color: Colors.white),
-              SizedBox(width: 10,),
+              SizedBox(width: 10),
             ],
             iconTheme: IconThemeData(color: Colors.white),
           ),
           drawer: Drawer(
-            shape:RoundedRectangleBorder(),
+            shape: RoundedRectangleBorder(),
             backgroundColor: Color.fromRGBO(27, 71, 170, 1.0),
             width: 270,
             shadowColor: Colors.white,
             elevation: 2,
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: [
                 const SizedBox(height: 30),
                 ListTile(
@@ -58,10 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Home",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                  leading: const Icon(
-                    Icons.home,
-                    color: Colors.white,
-                  ),
+                  leading: const Icon(Icons.home, color: Colors.white),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -72,10 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Dashboard",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                  leading: const Icon(
-                    Icons.dashboard,
-                    color: Colors.white,
-                  ),
+                  leading: const Icon(Icons.dashboard, color: Colors.white),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -86,10 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Profile",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                  leading: const Icon(
-                    Icons.portrait,
-                    color: Colors.white,
-                  ),
+                  leading: const Icon(Icons.portrait, color: Colors.white),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -100,25 +92,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Settings",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                  leading: const Icon(
-                    Icons.settings,
-                    color: Colors.white,
-                  ),
+                  leading: const Icon(Icons.settings, color: Colors.white),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
                 ),
               ],
             ),
-
           ),
-          body: BuildUI(userName: widget.userName,),
+          body: BuildUI(userName: widget.userName),
         );
       },
     );
   }
 }
-
 
 class BuildUI extends StatefulWidget {
   final String userName;
@@ -129,73 +116,101 @@ class BuildUI extends StatefulWidget {
 }
 
 class _BuildUIState extends State<BuildUI> {
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Hello ${widget.userName}! ",style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold),),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Hello ${widget.userName}! ",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("TODAY'S TASKS",style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),),
+                  child: Text(
+                    "TODAY'S TASKS",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("${context.watch<TaskProvider>().tasks.length} tasks",style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),),
+                  child: Text(
+                    "${context.watch<TaskProvider>().tasks.length} tasks",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ],),
-              Consumer<TaskProvider>(
-                builder: (context, Task, child) {
-                  if(context.watch<TaskProvider>().tasks.isEmpty){
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 50),
-                        child: Text("No tasks added yet",style:
-                          TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold
-                          ),),
+              ],
+            ),
+            Consumer<TaskProvider>(
+              builder: (context, taskProvider, child) {
+                taskProvider
+                    .fetchData(); 
+                final tasks =
+                    taskProvider.tasks;
+
+                if (tasks.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 50),
+                      child: Text(
+                        "No tasks added yet",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  }
-                  return ListView.builder(
-                    padding: EdgeInsets.only(top: 20, bottom: 5,left: 5,right: 5),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: context
-                        .watch<TaskProvider>()
-                        .tasks
-                        .length,
-                    itemBuilder: (context, index) {
-                      final task = context
-                          .watch<TaskProvider>()
-                          .tasks[index];
-                      return taskCard(
-                        index: index,
-                        taskTime: task.dateTime.toString(),
-                        taskTitle: task.title,
-                        description: task.description,
-                        isCompleted: task.isCompleted,
-                      );
-                    },
+                    ),
                   );
-                },
-              ),
-            ]
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.only(
+                    top: 20,
+                    bottom: 5,
+                    left: 5,
+                    right: 5,
+                  ),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = tasks[index];
+                    return taskCard(
+                      index: index,
+                      taskTime: task.dateTime.toString(),
+                      taskTitle: task.title,
+                      description: task.description,
+                      isCompleted: task.isCompleted,
+                    );
+                  },
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
